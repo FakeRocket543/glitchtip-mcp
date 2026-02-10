@@ -22,29 +22,40 @@ npm install
 
 ## Configuration
 
-### Environment Variables
+### 1. Get API Token
 
-| Variable | Description | Example |
-|----------|-------------|---------|
-| `GLITCHTIP_HOST` | GlitchTip server URL | `http://localhost:8000` |
-| `GLITCHTIP_TOKEN` | API authentication token | `your-api-token` |
+GlitchTip API tokens can be created via Django shell:
 
-### Get API Token
+```bash
+docker exec -it <glitchtip-container> python manage.py shell -c "
+from django.apps import apps
+from django.contrib.auth import get_user_model
+import secrets
 
-1. Login to GlitchTip UI
-2. Go to **Settings → API Tokens**
-3. Create a new token with read/write permissions
+APIToken = apps.get_model('api_tokens', 'APIToken')
+User = get_user_model()
+user = User.objects.first()
+token = APIToken(user=user, token=secrets.token_hex(32), label='MCP')
+token.scopes = 0xFFFFFFFF  # all permissions
+token.save()
+print(f'Token: {token.token}')
+"
+```
 
-### MCP Client Configuration
+### 2. Add to MCP Client
 
-Add to your MCP config file:
+**Claude Desktop** (`~/.config/claude/claude_desktop_config.json`):
+
+**Cursor** (Settings → MCP):
+
+**Kiro** (`.kiro/settings/mcp.json`):
 
 ```json
 {
   "mcpServers": {
     "glitchtip": {
       "command": "node",
-      "args": ["/path/to/glitchtip-mcp/index.js"],
+      "args": ["/absolute/path/to/glitchtip-mcp/index.js"],
       "env": {
         "GLITCHTIP_HOST": "http://localhost:8000",
         "GLITCHTIP_TOKEN": "your-api-token"
@@ -53,6 +64,13 @@ Add to your MCP config file:
   }
 }
 ```
+
+### Environment Variables
+
+| Variable | Description | Example |
+|----------|-------------|---------|
+| `GLITCHTIP_HOST` | GlitchTip server URL | `http://localhost:8000` |
+| `GLITCHTIP_TOKEN` | API authentication token | `abc123...` |
 
 ## Available Tools
 
@@ -66,9 +84,7 @@ Add to your MCP config file:
 | `list_issue_events` | List all events for an issue |
 | `resolve_issue` | Mark an issue as resolved |
 
-## Example Usage
-
-Once connected, try these prompts:
+## Example Prompts
 
 - "What errors are in GlitchTip?"
 - "Show me details of issue #123"
@@ -77,9 +93,9 @@ Once connected, try these prompts:
 
 ## Why?
 
-**Before:** You see error → Open GlitchTip UI → Copy error → Paste to AI → AI analyzes
+**Before:** Error occurs → Open GlitchTip UI → Copy stack trace → Paste to AI → AI analyzes
 
-**After:** You ask "What errors?" → AI queries directly → Analyzes → Fixes
+**After:** Ask "What errors?" → AI queries directly → Analyzes → Fixes
 
 ## Credits
 
@@ -92,13 +108,13 @@ Inspired by [Sentry MCP](https://github.com/getsentry/sentry-mcp-stdio). This is
 | `list_organizations` | ✅ | ✅ |
 | `list_projects` | ✅ | ✅ |
 | `list_project_issues` | ✅ | ✅ |
-| `get_sentry_issue` | ✅ | ✅ |
-| `get_sentry_event` | ✅ | ✅ |
+| `get_issue` | ✅ | ✅ |
+| `get_event` | ✅ | ✅ |
 | `list_issue_events` | ✅ | ✅ |
 | `resolve_issue` | ❌ | ✅ |
 | `resolve_short_id` | ✅ | ❌ |
 | `create_project` | ✅ | ❌ |
-| `list_organization_replays` | ✅ | ❌ (GlitchTip N/A) |
+| `list_replays` | ✅ | ❌ (GlitchTip N/A) |
 | Language | TypeScript | JavaScript |
 | Backend | Sentry.io | GlitchTip (self-hosted) |
 
