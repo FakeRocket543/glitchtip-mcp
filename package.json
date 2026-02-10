@@ -1,0 +1,21 @@
+{
+  "name": "glitchtip-mcp",
+  "version": "1.0.0",
+  "description": "MCP server for GlitchTip error tracking (Sentry-compatible)",
+  "main": "index.js",
+  "type": "module",
+  "keywords": ["mcp", "glitchtip", "sentry", "error-tracking", "model-context-protocol"],
+  "author": "Felix",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/glitchtip-mcp"
+  },
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.6.1",
+    "zod": "^3.24.2"
+  }
+}
