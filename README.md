@@ -15,6 +15,8 @@ Let AI assistants directly query your production errors without copy-pasting.
 ## Installation
 
 ```bash
+git clone https://github.com/FakeRocket543/glitchtip-mcp.git
+cd glitchtip-mcp
 npm install
 ```
 
